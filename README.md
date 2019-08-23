@@ -4,14 +4,15 @@
 
 1. Start minikube with PodSecurityPolicy enabled.
 
-   Info from here - https://suraj.io/post/psp-on-existing-cluster/
+   Reference - https://suraj.io/post/psp-on-existing-cluster/
 
     ```
     minikube start --extra-config=apiserver.enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds,PodSecurityPolicy,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
     ```
 
 2. Once the server is started, due to the enabling of PSP, we need to provide policies. 
-   got it running from https://github.com/appscodelabs/tasty-kube/blob/dc7b32a3ee8375f03218f6b10c3b51aa82c91a96/minikube/1.10/psp/README.md
+   
+   Reference -  https://github.com/appscodelabs/tasty-kube/blob/dc7b32a3ee8375f03218f6b10c3b51aa82c91a96/minikube/1.10/psp/README.md
 
     ```
     $ kubectl apply -f manifests/minikube-yamls-after-enabling-psp/psp.yaml
@@ -33,7 +34,7 @@
 5. Generate TLS certs for our webhookserver and create a secret
    Copy the certificate string to template and create a `ValidatingWebhookConfiguration`
 
-   Info from - https://github.com/banzaicloud/admission-webhook-example
+   Reference- https://github.com/banzaicloud/admission-webhook-example
   
     ```
     $ cd manifests/solution-deployment-yamls/certs
