@@ -7,7 +7,7 @@
    Info from here - https://suraj.io/post/psp-on-existing-cluster/
 
     ```
-    minikube start --extra-config=apiserver.enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds,PodSecurityPolicy
+    minikube start --extra-config=apiserver.enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,ResourceQuota,DefaultTolerationSeconds,PodSecurityPolicy,MutatingAdmissionWebhook,ValidatingAdmissionWebhook
     ```
 
 2. Once the server is started, due to the enabling of PSP, we need to provide policies. 
