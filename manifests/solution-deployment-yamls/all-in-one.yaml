@@ -1,0 +1,100 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: validation
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhookserver-service
+  namespace: validation
+  labels:
+    app: webhookserver
+spec:
+  ports:
+    - port: 443
+      targetPort: 8443
+  selector:
+    app: webhookserver
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: webhookserver-role
+  namespace: validation
+rules:
+  - apiGroups: ["extensions"]
+    resources: ["podsecuritypolicies"]
+    verbs: ["use"]
+    resourceNames:
+      - default
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: webhookserver-rolebinding
+  namespace: validation
+roleRef:
+  kind: Role
+  name: webhookserver-role
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: Group
+    apiGroup: rbac.authorization.k8s.io
+    name: system:serviceaccounts
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webhookserver-configmap
+  namespace: validation
+data:
+  config.yaml: |
+    rules: 
+    - name: "seccomp-rule"
+      admissionMessage: "Unconfined and * seccomp secomp profiles not allowed."
+      jsonpath: "{.metadata.annotations['seccomp\\.security\\.alpha\\.kubernetes\\.io/defaultProfileName', 'seccomp\\.security\\.alpha\\.kubernetes\\.io/allowededProfileNames']}"
+      regex: '(unconfined|\*|^$)'
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhookserver-deployment
+  namespace: validation
+  labels:
+    app: webhookserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webhookserver
+  template:
+    metadata:
+      labels:
+        app: webhookserver
+    spec:
+      containers:
+        - name: webhookserver
+          image: webhookserver
+          imagePullPolicy: IfNotPresent
+          args:
+            - -tlsCertFilePath=/validating-admission-webhook/certs/cert.pem
+            - -tlsKeyFilePath=/validating-admission-webhook/certs/key.pem
+            - -port=8443
+            - -alsologtostderr
+            - 2>&1
+          env:
+            - name: CONFIG_PATH
+              value: "/validating-admission-webhook/"
+          volumeMounts:
+            - name: webhookserver-certs
+              mountPath: /validating-admission-webhook/certs
+            - name: webhookserver-configmap
+              mountPath: /validating-admission-webhook
+      volumes:
+        - name: webhookserver-certs
+          secret:
+            secretName: webhookserver-certs
+        - name: webhookserver-configmap
+          configMap:
+            name: webhookserver-configmap
