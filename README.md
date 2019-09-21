@@ -1,5 +1,9 @@
 # PodSecurityPolicy validating admission webhook server
 
+## Slides
+This topic was presented by me at a Meetup in Bangalore on 21st September 2019.
+
+Slides for the same are [here](https://docs.google.com/presentation/d/1lfCKQxgseX3FXVgLT-UPbvHP8hnesgI8_aASlOYPKVk/edit?usp=sharing) 
 ## Deployment steps.
 
 1. Start minikube with PodSecurityPolicy enabled.
@@ -16,8 +20,8 @@
 
     ```
     $ kubectl apply -f manifests/minikube-yamls-after-enabling-psp/psp.yaml
-    $ kubectl auth reconcile -f manifests/minikube-yamls-after-enabling-psp/cluster-roles.yaml
-    $ kubectl auth reconcile -f manifests/minikube-yamls-after-enabling-psp/role-bindings.yaml
+    $ kubectl auth reconcile -f manifests/minikube-yamls-after-enabling-psp/clusterroles.yaml
+    $ kubectl auth reconcile -f manifests/minikube-yamls-after-enabling-psp/rolebindings.yaml
     ```
 
 3. Building docker image locally
